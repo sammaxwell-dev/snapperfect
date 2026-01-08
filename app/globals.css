@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  /* Neon/Cyber Theme Colors */
+  --background: #050505;
+  --sidebar-bg: #09090b;
+  --foreground: #ffffff;
+
+  --primary: #D4FF00;
+  /* Neon Lime */
+  --secondary: #FF0099;
+  /* Hot Pink */
+
+  --card-bg: #121212;
+  --card-border: #27272a;
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-sidebar: var(--sidebar-bg);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+
+  --color-card: var(--card-bg);
+  --color-card-border: var(--card-border);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  antialiased: true;
+}
+
+/* Custom Utilities */
+@utility glass-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+
+@utility gradient-text {
+  /* Updated to Lime -> Pink */
+  background: linear-gradient(to right, #D4FF00, #FF0099);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility sidebar-link {
+  @apply flex items-center gap-3 px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer;
+}
+
+@utility sidebar-link-active {
+  /* Transparent background with Neon Lime text/glow */
+  @apply flex items-center gap-3 px-4 py-2.5 text-[#D4FF00] bg-[#D4FF00]/5 rounded-lg font-bold border-l-2 border-[#D4FF00];
+}
