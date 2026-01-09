@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Home,
   LayoutGrid,
@@ -7,12 +10,19 @@ import {
   Box,
   Maximize,
   Sparkles,
+  Package,
   Settings,
   ChevronDown,
   LogOut
 } from "lucide-react";
 
 export default function Sidebar() {
+  const pathname = usePathname();
+
+  const getLinkClass = (path: string) => {
+    return pathname === path ? "sidebar-link-active" : "sidebar-link";
+  };
+
   return (
     <aside className="w-64 h-screen fixed left-0 top-0 bg-sidebar border-r border-white/5 flex flex-col z-50">
       {/* Logo Section */}
@@ -20,7 +30,7 @@ export default function Sidebar() {
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-10 h-10">
             <Image
-              src="/assets/logo.png"
+              src="/assets/logo_v2.png"
               alt="SnapPerfect Logo"
               fill
               className="object-contain filter drop-shadow-[0_0_8px_rgba(212,255,0,0.5)] group-hover:scale-110 transition-transform"
@@ -39,11 +49,11 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar space-y-8">
         {/* Core Links */}
         <div className="space-y-1">
-          <Link href="/" className="sidebar-link-active">
+          <Link href="/" className={getLinkClass("/")}>
             <Home className="w-5 h-5" />
             <span>Home</span>
           </Link>
-          <Link href="/library" className="sidebar-link">
+          <Link href="/library" className={getLinkClass("/library")}>
             <LayoutGrid className="w-5 h-5" />
             <span>Library</span>
           </Link>
@@ -55,22 +65,27 @@ export default function Sidebar() {
             AI Creation Tools
           </h3>
           <div className="space-y-1">
-            <Link href="/relight" className="sidebar-link">
+            <Link href="/relight" className={getLinkClass("/relight")}>
               <SunMedium className="w-5 h-5" />
               <span>Relight</span>
             </Link>
-            <Link href="/angles" className="sidebar-link">
+            <Link href="/angles" className={getLinkClass("/angles")}>
               <Box className="w-5 h-5" />
               <span>Angles</span>
             </Link>
-            <Link href="/upscaler" className="sidebar-link">
+            <Link href="/upscaler" className={getLinkClass("/upscaler")}>
               <Maximize className="w-5 h-5" />
               <span>Upscaler</span>
             </Link>
-            <Link href="/generate" className="sidebar-link group relative">
+            <Link href="/generate" className={`${getLinkClass("/generate")} group relative`}>
               <Sparkles className="w-5 h-5" />
               <span>Generate</span>
               <span className="absolute right-2 px-1.5 py-0.5 rounded text-[8px] font-black bg-[#D4FF00] text-black uppercase">NEW</span>
+            </Link>
+            <Link href="/product-enhance" className={`${getLinkClass("/product-enhance")} group relative`}>
+              <Package className="w-5 h-5" />
+              <span>Product Enhance</span>
+              <span className="absolute right-2 px-1.5 py-0.5 rounded text-[8px] font-black bg-[#FF0099] text-white uppercase">HOT</span>
             </Link>
           </div>
         </div>
@@ -103,7 +118,7 @@ export default function Sidebar() {
         </button>
 
         <div className="space-y-1">
-          <Link href="/settings" className="sidebar-link">
+          <Link href="/settings" className={getLinkClass("/settings")}>
             <Settings className="w-5 h-5" />
             <span>Settings</span>
           </Link>

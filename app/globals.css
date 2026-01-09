@@ -61,3 +61,49 @@ body {
   /* Transparent background with Neon Lime text/glow */
   @apply flex items-center gap-3 px-4 py-2.5 text-[#D4FF00] bg-[#D4FF00]/5 rounded-lg font-bold border-l-2 border-[#D4FF00];
 }
+
+@keyframes scan {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  95% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes scanning-glow {
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-scan {
+  animation: scan 2.5s ease-in-out infinite;
+}
+
+.animate-scanning-glow {
+  animation: scanning-glow 2s ease-in-out infinite;
+}
+
+@utility scanner-grid {
+  background-image: linear-gradient(to right, rgba(212, 255, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 255, 0, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
