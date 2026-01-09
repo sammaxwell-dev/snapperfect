@@ -266,7 +266,7 @@ export default function GeneratePage() {
             </div>
 
             {/* Unified Bottom Toolbar */}
-            <div className="fixed bottom-0 left-64 right-0 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-10 pb-6 px-8 z-40">
+            <div className="fixed bottom-0 left-0 lg:left-64 right-0 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-6 pb-4 md:pb-6 px-4 md:px-8 z-40">
                 <div className="max-w-5xl mx-auto flex flex-col gap-3">
 
                     {/* Style Presets Row */}

@@ -30,8 +30,8 @@ export default function Sidebar() {
 
   const getLinkClass = (path: string) => {
     const baseClass = isCollapsed
-      ? "flex items-center justify-center p-2.5 rounded-lg transition-all duration-200 cursor-pointer group relative"
-      : "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 cursor-pointer";
+      ? "flex items-center justify-center p-2 rounded-lg transition-all duration-200 cursor-pointer group relative"
+      : "flex items-center gap-3 px-4 py-1.5 rounded-lg transition-all duration-200 cursor-pointer";
 
     if (pathname === path) {
       return `${baseClass} text-[#D4FF00] bg-[#D4FF00]/5 font-bold ${!isCollapsed ? 'border-l-2 border-[#D4FF00]' : ''}`;
@@ -48,7 +48,7 @@ export default function Sidebar() {
   const SidebarContent = () => (
     <>
       {/* Logo Section */}
-      <div className={`${isCollapsed ? 'p-4' : 'p-8'} transition-all duration-300`}>
+      <div className={`${isCollapsed ? 'p-3' : 'p-6'} transition-all duration-300`}>
         <Link href="/" className="flex items-center gap-4 group" onClick={() => setIsMobileOpen(false)}>
           <div className={`relative ${isCollapsed ? 'w-10 h-10' : 'w-12 h-12'} shrink-0 transition-all duration-300`}>
             <Image
@@ -73,7 +73,7 @@ export default function Sidebar() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar space-y-8">
+      <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar space-y-4">
         {/* Core Links */}
         <div className="space-y-1">
           <Link href="/" className={getLinkClass("/")} onClick={() => setIsMobileOpen(false)}>
@@ -141,7 +141,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer Area: Profile & Settings */}
-      <div className={`${isCollapsed ? 'p-2' : 'p-4'} bg-black/20 border-t border-white/5 space-y-4 transition-all duration-300`}>
+      <div className={`${isCollapsed ? 'p-2' : 'p-3'} bg-black/20 border-t border-white/5 space-y-3 transition-all duration-300`}>
         {/* Premium Profile Section */}
         {!isCollapsed && (
           <button className="w-full group">

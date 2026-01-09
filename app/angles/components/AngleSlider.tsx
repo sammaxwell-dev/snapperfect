@@ -41,14 +41,14 @@ export default function AngleSlider({
     const isZeroCentered = min < 0 && max > 0;
 
     return (
-        <div className="flex items-center gap-4 px-4 py-3 rounded-xl bg-[#0a0a0a] border border-zinc-800/50 group hover:border-zinc-700/50 transition-colors">
+        <div className="flex items-center gap-4 px-3 py-1.5 rounded-xl bg-[#0a0a0a] border border-zinc-800/50 group hover:border-zinc-700/50 transition-colors">
             {/* Label */}
             <span className="text-sm font-black text-zinc-500 w-20 flex-shrink-0 uppercase italic tracking-tighter">
                 {label}
             </span>
 
             {/* Slider Track */}
-            <div className="flex-1 relative h-8 flex items-center">
+            <div className="flex-1 relative h-6 flex items-center">
                 {/* Background Track */}
                 <div className="absolute inset-x-0 h-1 bg-zinc-800 rounded-full" />
 
@@ -99,10 +99,19 @@ export default function AngleSlider({
                 </div>
             </div>
 
-            {/* Value Display */}
-            <div className="w-16 flex-shrink-0 text-right">
-                <span className="text-sm font-black text-white tabular-nums tracking-tight">
-                    {localValue > 0 && isZeroCentered ? '+' : ''}{localValue}{suffix}
+            {/* Value Display / Manual Input */}
+            <div className="w-20 flex-shrink-0 relative">
+                <input
+                    type="number"
+                    min={min}
+                    max={max}
+                    step={step}
+                    value={localValue}
+                    onChange={handleChange}
+                    className="w-full bg-[#121212] border border-zinc-800 rounded-lg px-2 py-1 text-sm font-black text-[#D4FF00] text-center focus:outline-none focus:border-[#D4FF00]/50 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-black text-zinc-600 pointer-events-none uppercase italic">
+                    {suffix}
                 </span>
             </div>
         </div>

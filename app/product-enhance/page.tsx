@@ -226,9 +226,9 @@ export default function ProductEnhancePage() {
     return (
         <div className="min-h-screen flex flex-col bg-[#050505] text-white">
             {/* Main Content */}
-            <div className="flex-1 overflow-auto p-6 pb-48">
+            <div className="flex-1 overflow-auto p-4 md:p-6 pb-24">
                 {/* Header */}
-                <div className="mb-8">
+                <div className="mb-4">
                     <h1 className="text-3xl font-black text-white uppercase tracking-tight">
                         Product <span className="text-[#D4FF00]">Enhance</span>
                     </h1>
@@ -246,14 +246,14 @@ export default function ProductEnhancePage() {
 
                 {/* Upload Zone */}
                 {!uploadedImage ? (
-                    <div className="flex items-center justify-center min-h-[600px]">
+                    <div className="flex items-center justify-center min-h-[400px] lg:min-h-[500px] py-4">
                         <div
                             onClick={() => fileInputRef.current?.click()}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                             className={`
-                                relative cursor-pointer w-[360px] h-[640px] rounded-[32px] 
+                                relative cursor-pointer w-full max-w-[320px] aspect-[9/16] max-h-[70vh] rounded-[32px] 
                                 flex flex-col items-center justify-center text-center p-8
                                 transition-all duration-300 group
                                 border border-white/5 bg-[#0a0a0a]
@@ -299,7 +299,7 @@ export default function ProductEnhancePage() {
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[600px]">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[450px] lg:h-[500px]">
                         {/* Original Image Preview */}
                         <div className="h-full relative rounded-3xl overflow-hidden bg-[#0a0a0a] border border-zinc-800">
                             <div className="absolute inset-0">
@@ -399,43 +399,43 @@ export default function ProductEnhancePage() {
                 )}
             </div>
 
-            {/* Bottom Toolbar */}
-            <div className="fixed bottom-0 left-64 right-0 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-10 pb-6 px-8 z-40">
-                <div className="max-w-5xl mx-auto flex flex-col gap-3">
-                    {/* Style Selector Button */}
-                    <button
-                        onClick={() => setShowStyleModal(true)}
-                        className="flex items-center gap-4 p-3 rounded-xl bg-[#0a0a0a] border border-zinc-800 hover:border-zinc-600 transition-all group"
-                    >
-                        <div className="w-14 h-14 rounded-lg overflow-hidden relative flex-shrink-0">
-                            {currentStyle && (
-                                <Image
-                                    src={currentStyle.preview}
-                                    alt={currentStyle.label}
-                                    fill
-                                    className="object-cover"
-                                />
-                            )}
-                        </div>
-                        <div className="flex-1 text-left">
-                            <div className="text-xs text-zinc-500 uppercase tracking-wider">Selected Style</div>
-                            <div className="text-sm font-bold text-white">{currentStyle?.label}</div>
-                        </div>
-                        <ChevronDown className="w-5 h-5 text-zinc-600 group-hover:text-white transition-colors" />
-                    </button>
+            <div className="fixed bottom-0 left-0 lg:left-64 right-0 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-4 pb-4 px-4 md:px-6 z-40">
+                <div className="max-w-6xl mx-auto">
+                    {/* Compact Controls Bar */}
+                    <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#09090b]/80 backdrop-blur-xl border border-white/10 shadow-2xl ring-1 ring-white/5">
+                        {/* Style Selector */}
+                        <button
+                            onClick={() => setShowStyleModal(true)}
+                            className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all group min-w-[140px]"
+                        >
+                            <div className="w-8 h-8 rounded-lg overflow-hidden relative flex-shrink-0 border border-white/10">
+                                {currentStyle && (
+                                    <Image
+                                        src={currentStyle.preview}
+                                        alt={currentStyle.label}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                )}
+                            </div>
+                            <div className="flex-1 text-left min-w-0">
+                                <div className="text-[10px] text-zinc-500 uppercase tracking-wider leading-none mb-0.5">Style</div>
+                                <div className="text-xs font-bold text-white truncate">{currentStyle?.label}</div>
+                            </div>
+                            <ChevronDown className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
+                        </button>
 
-                    {/* Controls Bar */}
-                    <div className="flex items-center gap-3 p-2 rounded-2xl bg-[#09090b] border border-[#27272a] shadow-2xl shadow-black/50 ring-1 ring-white/5">
+                        <div className="w-px h-8 bg-[#27272a]" />
+
                         {/* Platform Selector */}
                         <div className="relative">
                             <button
                                 onClick={() => setShowPlatformPopover(!showPlatformPopover)}
-                                className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all"
+                                className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all"
                             >
-                                {currentPlatform && <currentPlatform.icon className="w-4 h-4 text-[#D4FF00]" />}
-                                <span className="text-sm font-bold text-white">{currentPlatform?.label}</span>
-                                <span className="text-xs text-zinc-500">({currentPlatform?.aspectRatio})</span>
-                                <ChevronDown className="w-4 h-4 text-zinc-600" />
+                                {currentPlatform && <currentPlatform.icon className="w-3.5 h-3.5 text-[#D4FF00]" />}
+                                <span className="text-xs font-bold text-white whitespace-nowrap">{currentPlatform?.label}</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-zinc-600" />
                             </button>
 
                             {showPlatformPopover && (
@@ -473,23 +473,21 @@ export default function ProductEnhancePage() {
                             )}
                         </div>
 
-                        <div className="w-px h-8 bg-[#27272a]" />
-
                         {/* Model Selector */}
-                        <div className="relative">
+                        <div className="relative hidden md:block">
                             <button
                                 onClick={() => setShowModelPopover(!showModelPopover)}
-                                className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all"
+                                className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all"
                             >
                                 {(() => {
                                     const currentModel = MODELS.find(m => m.id === selectedModel);
                                     const Icon = currentModel?.icon || Sparkles;
-                                    return <Icon className="w-4 h-4 text-[#D4FF00]" />;
+                                    return <Icon className="w-3.5 h-3.5 text-[#D4FF00]" />;
                                 })()}
-                                <span className="text-sm font-bold text-white">
+                                <span className="text-xs font-bold text-white whitespace-nowrap">
                                     {MODELS.find(m => m.id === selectedModel)?.label || 'Pro'}
                                 </span>
-                                <ChevronDown className="w-4 h-4 text-zinc-600" />
+                                <ChevronDown className="w-3.5 h-3.5 text-zinc-600" />
                             </button>
 
                             {showModelPopover && (
@@ -527,24 +525,24 @@ export default function ProductEnhancePage() {
                             )}
                         </div>
 
-                        <div className="w-px h-8 bg-[#27272a]" />
+                        <div className="w-px h-8 bg-[#27272a] hidden sm:block" />
 
                         {/* Number of images */}
-                        <div className="flex items-center gap-3 bg-[#121212]/50 rounded-xl border border-white/5 px-3 py-2">
+                        <div className="flex items-center gap-2 bg-[#121212]/50 rounded-xl border border-white/5 px-2 py-1.5">
                             <button
                                 onClick={() => setNumberOfImages(Math.max(1, numberOfImages - 1))}
                                 disabled={numberOfImages <= 1}
                                 className="text-zinc-600 hover:text-white disabled:opacity-30 p-0.5 hover:bg-white/5 rounded-md transition-colors"
                             >
-                                <Minus className="w-3.5 h-3.5" />
+                                <Minus className="w-3 h-3" />
                             </button>
-                            <span className="text-xs font-black text-[#D4FF00] w-6 text-center tabular-nums">{numberOfImages}/4</span>
+                            <span className="text-[10px] font-black text-[#D4FF00] w-6 text-center tabular-nums">{numberOfImages}/4</span>
                             <button
                                 onClick={() => setNumberOfImages(Math.min(4, numberOfImages + 1))}
                                 disabled={numberOfImages >= 4}
                                 className="text-zinc-600 hover:text-white disabled:opacity-30 p-0.5 hover:bg-white/5 rounded-md transition-colors"
                             >
-                                <span className="text-lg leading-none font-medium">+</span>
+                                <span className="text-sm leading-none font-medium">+</span>
                             </button>
                         </div>
 
@@ -555,18 +553,18 @@ export default function ProductEnhancePage() {
                             onClick={handleGenerate}
                             disabled={isGenerating || !uploadedImage}
                             className={`
-                                flex items-center gap-2 px-8 py-3 rounded-xl font-black text-[11px] uppercase tracking-wider
+                                flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-wider
                                 transition-all duration-300 transform active:scale-95
                                 ${isGenerating || !uploadedImage
                                     ? 'bg-zinc-900 text-zinc-700 cursor-not-allowed border border-white/5'
-                                    : 'bg-[#D4FF00] text-black hover:bg-[#eaff4d] hover:shadow-[0_0_30px_rgba(212,255,0,0.4)]'}
+                                    : 'bg-[#D4FF00] text-black hover:bg-[#eaff4d] hover:shadow-[0_0_20px_rgba(212,255,0,0.3)]'}
                             `}
                         >
                             {isGenerating ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             ) : (
                                 <>
-                                    <Sparkles className="w-4 h-4 fill-current" />
+                                    <Sparkles className="w-3.5 h-3.5 fill-current" />
                                     Enhance
                                 </>
                             )}
