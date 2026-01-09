@@ -4,23 +4,23 @@ import { SunMedium, Box, Maximize, Sparkles, ArrowRight, Heart } from "lucide-re
 
 export default function Home() {
   return (
-    <div className="p-8 min-h-screen pb-20">
+    <div className="p-4 md:p-6 lg:p-8 min-h-screen pb-20 pt-16 lg:pt-8">
       {/* Hero Section */}
       <div className="w-full rounded-3xl bg-[#121212] relative overflow-hidden mb-12 border border-white/5">
         {/* Neon Glows */}
         <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#D4FF00]/10 blur-[150px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-[#FF0099]/10 blur-[150px] rounded-full pointer-events-none" />
 
-        <div className="relative z-10 py-16 px-8 text-center flex flex-col items-center">
+        <div className="relative z-10 py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8 text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4FF00] text-black text-xs font-bold mb-6">
             <span className="bg-black text-[#D4FF00] px-1.5 rounded text-[10px]">NEW</span> <span>AI GENERATION 2.0</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tight italic">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 md:mb-6 uppercase tracking-tight italic">
             Transform Your <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] to-[#FF0099]">Visuals</span>
           </h1>
-          <p className="text-zinc-400 text-lg mb-12 max-w-xl">
+          <p className="text-zinc-400 text-sm md:text-base lg:text-lg mb-8 md:mb-12 max-w-xl px-4 md:px-0">
             Unlock Unlimited Generations, newest features, and the capacity you need to create without limits.
           </p>
 
@@ -39,7 +39,7 @@ export default function Home() {
           <span className="w-1 h-6 bg-[#D4FF00] block"></span> FEATURED GUIDES
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <GuideCard
             image="/assets/guide-sneakers.png"
             tag="How To Use"
@@ -94,7 +94,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <GalleryItem src="/assets/gallery-tech.png" span="col-span-1 md:col-span-2 row-span-2" />
           <GalleryItem src="/assets/guide-sneakers.png" />
           <GalleryItem src="/assets/guide-upscale.png" />

@@ -185,10 +185,10 @@ export default function AnglesPage() {
     return (
         <div className="min-h-screen flex flex-col bg-[#050505] text-white">
             {/* Main Content */}
-            <div className="flex-1 overflow-auto p-8 pb-48">
+            <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pb-48 pt-16 lg:pt-8">
                 {/* Header Container */}
-                <div className="max-w-4xl mx-auto mb-10">
-                    <h1 className="text-4xl font-black text-white uppercase tracking-tighter italic">
+                <div className="max-w-4xl mx-auto mb-6 md:mb-10">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-white uppercase tracking-tighter italic">
                         <span className="text-[#D4FF00]">Angles</span>
                     </h1>
                     <p className="text-zinc-500 mt-2 font-medium">
@@ -204,7 +204,7 @@ export default function AnglesPage() {
                 )}
 
                 {/* Main Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 gap-6 md:gap-8 max-w-4xl mx-auto lg:grid-cols-2">
                     {/* Left: Upload Zone / Original Image */}
                     <div className="relative">
                         {!uploadedImage ? (
@@ -333,7 +333,7 @@ export default function AnglesPage() {
                     {/* Right: 3D Cube + Interaction */}
                     <div className="flex flex-col gap-6">
                         {/* 3D Cube Preview Area - Made even smaller */}
-                        <div className="w-[65%] aspect-square mx-auto relative rounded-2xl overflow-hidden bg-[#0a0a0a] border border-zinc-800/50">
+                        <div className="w-full md:w-[65%] aspect-square mx-auto relative rounded-2xl overflow-hidden bg-[#0a0a0a] border border-zinc-800/50">
                             <AnglesCube
                                 rotation={rotation}
                                 tilt={tilt}
@@ -395,14 +395,14 @@ export default function AnglesPage() {
             </div>
 
             {/* Bottom Generate Section */}
-            <div className="fixed bottom-0 left-64 right-0 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-12 pb-8 px-8 z-40">
+            <div className="fixed bottom-0 left-0 lg:left-64 right-0 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-8 md:pt-12 pb-6 md:pb-8 px-4 md:px-8 z-40">
                 <div className="max-w-4xl mx-auto flex flex-col gap-5">
                     {/* Generate Button */}
                     <button
                         onClick={handleGenerate}
                         disabled={isGenerating || !uploadedImage}
                         className={`
-                            group relative overflow-hidden w-full flex items-center justify-center gap-3 py-5 rounded-2xl font-black text-base uppercase tracking-widest italic
+                            group relative overflow-hidden w-full flex items-center justify-center gap-3 py-4 md:py-5 rounded-2xl font-black text-sm md:text-base uppercase tracking-widest italic
                             transition-all duration-500 transform active:scale-[0.98]
                             ${isGenerating || !uploadedImage
                                 ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed border border-white/5'
