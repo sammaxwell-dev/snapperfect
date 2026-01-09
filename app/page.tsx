@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { SunMedium, Box, Maximize, Sparkles, ArrowRight, Heart } from "lucide-react";
+import { SunMedium, Box, Maximize, Sparkles, ArrowRight, Heart, Shirt, Fingerprint } from "lucide-react";
 
 export default function Home() {
   return (
@@ -25,10 +25,12 @@ export default function Home() {
           </p>
 
           <div className="flex gap-4 flex-wrap justify-center">
-            <QuickAction icon={SunMedium} label="RELIGHT" />
-            <QuickAction icon={Box} label="ANGLES" />
-            <QuickAction icon={Maximize} label="UPSCALER" />
-            <QuickAction icon={Sparkles} label="MORE" />
+            <Link href="/relight"><QuickAction icon={SunMedium} label="RELIGHT" /></Link>
+            <Link href="/angles"><QuickAction icon={Box} label="ANGLES" /></Link>
+            <Link href="/upscaler"><QuickAction icon={Maximize} label="UPSCALER" /></Link>
+            <Link href="/fashion-motion"><QuickAction icon={Shirt} label="MOTION" /></Link>
+            <Link href="/brand-identity"><QuickAction icon={Fingerprint} label="BRAND" /></Link>
+            <Link href="/generate"><QuickAction icon={Sparkles} label="MORE" /></Link>
           </div>
         </div>
       </div>

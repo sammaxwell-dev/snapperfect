@@ -18,7 +18,9 @@ import {
   Menu,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Shirt,
+  Fingerprint
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -27,10 +29,10 @@ export default function Sidebar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const getLinkClass = (path: string) => {
-    const baseClass = isCollapsed 
+    const baseClass = isCollapsed
       ? "flex items-center justify-center p-2.5 rounded-lg transition-all duration-200 cursor-pointer group relative"
       : "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 cursor-pointer";
-    
+
     if (pathname === path) {
       return `${baseClass} text-[#D4FF00] bg-[#D4FF00]/5 font-bold ${!isCollapsed ? 'border-l-2 border-[#D4FF00]' : ''}`;
     }
@@ -126,6 +128,14 @@ export default function Sidebar() {
                 </>
               )}
             </Link>
+            <Link href="/fashion-motion" className={getLinkClass("/fashion-motion")} onClick={() => setIsMobileOpen(false)}>
+              <Shirt className="w-5 h-5 shrink-0" />
+              {isCollapsed ? <Tooltip>Fashion Motion</Tooltip> : <span>Fashion Motion</span>}
+            </Link>
+            <Link href="/brand-identity" className={getLinkClass("/brand-identity")} onClick={() => setIsMobileOpen(false)}>
+              <Fingerprint className="w-5 h-5 shrink-0" />
+              {isCollapsed ? <Tooltip>Brand Identity</Tooltip> : <span>Brand Identity</span>}
+            </Link>
           </div>
         </div>
       </nav>
@@ -138,7 +148,7 @@ export default function Sidebar() {
             <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all">
               <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-[#D4FF00]/30 group-hover:border-[#D4FF00] transition-colors">
                 <Image
-                  src="/assets/avatar.png"
+                  src="/avatar/avatar.jpeg"
                   alt="User Avatar"
                   fill
                   className="object-cover"
@@ -146,7 +156,7 @@ export default function Sidebar() {
               </div>
               <div className="flex-1 text-left">
                 <div className="text-xs font-black text-white uppercase tracking-tight group-hover:text-[#D4FF00] transition-colors">
-                  ELITE CREATOR
+                  SHAMIL
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D4FF00] shadow-[0_0_4px_#D4FF00]" />
@@ -175,7 +185,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Menu Button */}
-      <button 
+      <button
         className="lg:hidden fixed top-4 left-4 z-[60] p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
@@ -188,7 +198,7 @@ export default function Sidebar() {
 
       {/* Mobile Overlay */}
       {isMobileOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
           onClick={() => setIsMobileOpen(false)}
         />
@@ -210,7 +220,7 @@ export default function Sidebar() {
         ${isCollapsed ? 'w-16' : 'w-64'}
       `}>
         <SidebarContent />
-        
+
         {/* Collapse Toggle Button */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
