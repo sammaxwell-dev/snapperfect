@@ -164,19 +164,6 @@ export default function GeneratePage() {
                     </div>
                 )}
 
-                {/* Empty State */}
-                {generatedImages.length === 0 && !isGenerating && (
-                    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-                        <div className="w-24 h-24 rounded-full bg-[#121212] border border-white/5 flex items-center justify-center mb-6">
-                            <ImageIcon className="w-10 h-10 text-zinc-600" />
-                        </div>
-                        <h2 className="text-xl font-bold text-white mb-2">No images yet</h2>
-                        <p className="text-zinc-500 max-w-md">
-                            Enter a prompt below and click Generate to create stunning AI images
-                        </p>
-                    </div>
-                )}
-
                 {/* Unified Image Grid (Loading + Generated) */}
                 {(isGenerating || generatedImages.length > 0) && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -520,35 +507,37 @@ export default function GeneratePage() {
             </div>
 
             {/* Expanded Image Modal */}
-            {expandedImage && (
-                <div
-                    className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-8"
-                    onClick={() => setExpandedImage(null)}
-                >
-                    <button
-                        className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            {
+                expandedImage && (
+                    <div
+                        className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-8"
                         onClick={() => setExpandedImage(null)}
                     >
-                        <X className="w-6 h-6 text-white" />
-                    </button>
+                        <button
+                            className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                            onClick={() => setExpandedImage(null)}
+                        >
+                            <X className="w-6 h-6 text-white" />
+                        </button>
 
-                    <div className="relative max-w-5xl max-h-[90vh] w-full h-full">
-                        {expandedImage.imageData ? (
-                            <Image
-                                src={`data:${expandedImage.mimeType || 'image/png'};base64,${expandedImage.imageData}`}
-                                alt="Expanded image"
-                                fill
-                                className="object-contain"
-                                onClick={(e) => e.stopPropagation()}
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#121212] rounded-xl">
-                                <span className="text-zinc-500">Demo placeholder</span>
-                            </div>
-                        )}
+                        <div className="relative max-w-5xl max-h-[90vh] w-full h-full">
+                            {expandedImage.imageData ? (
+                                <Image
+                                    src={`data:${expandedImage.mimeType || 'image/png'};base64,${expandedImage.imageData}`}
+                                    alt="Expanded image"
+                                    fill
+                                    className="object-contain"
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-[#121212] rounded-xl">
+                                    <span className="text-zinc-500">Demo placeholder</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             <style jsx>{`
         @keyframes shimmer {
@@ -566,6 +555,6 @@ export default function GeneratePage() {
           scrollbar-width: none;
         }
       `}</style>
-        </div>
+        </div >
     );
 }

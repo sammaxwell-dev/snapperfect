@@ -27,20 +27,23 @@ export default function Sidebar() {
     <aside className="w-64 h-screen fixed left-0 top-0 bg-sidebar border-r border-white/5 flex flex-col z-50">
       {/* Logo Section */}
       <div className="p-8">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10">
+        <Link href="/" className="flex items-center gap-4 group">
+          <div className="relative w-12 h-12 shrink-0">
             <Image
-              src="/assets/logo_v2.png"
+              src="/assets/logo_s.png"
               alt="SnapPerfect Logo"
               fill
-              className="object-contain filter drop-shadow-[0_0_8px_rgba(212,255,0,0.5)] group-hover:scale-110 transition-transform"
+              className="object-contain filter drop-shadow-[0_0_12px_rgba(212,255,0,0.4)] group-hover:scale-110 transition-transform"
             />
           </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-black text-white leading-none tracking-tighter uppercase italic">
-              SNAP<span className="text-[#D4FF00]">PERFECT</span>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-xl font-black text-white leading-none tracking-tighter uppercase italic group-hover:text-[#D4FF00] transition-colors">
+              SNAP<span className="text-white group-hover:text-[#D4FF00]">PERFECT</span>
             </span>
-            <span className="text-[10px] font-bold text-zinc-500 tracking-[0.2em] uppercase">Visual AI</span>
+            <div className="flex flex-col">
+              <span className="text-[8px] font-black text-[#D4FF00] tracking-[0.15em] uppercase leading-none">AI Studio</span>
+              <span className="text-[8px] font-bold text-zinc-500 tracking-[0.1em] uppercase leading-tight mt-0.5">for Ecommerce</span>
+            </div>
           </div>
         </Link>
       </div>
