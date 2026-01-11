@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateText } from 'ai';
+import { google, isDemoMode, handleAIError, GEMINI_IMAGE_MODELS } from '@/lib/ai-provider';
 
 interface ProductEnhanceRequest {
     imageBase64: string;
@@ -44,12 +46,10 @@ export async function POST(request: NextRequest) {
             style = 'studio',
             platform = 'custom',
             numberOfImages = 1,
-            model = 'gemini-3-pro-image-preview'
+            model = GEMINI_IMAGE_MODELS.pro
         } = body;
 
-        const apiKey = process.env.GEMINI_API_KEY;
-
-        if (!apiKey || apiKey === 'your_api_key_here') {
+        if (isDemoMode()) {
             // Demo mode
             return NextResponse.json({
                 predictions: Array(numberOfImages).fill(null).map((_, i) => ({
@@ -76,57 +76,56 @@ export async function POST(request: NextRequest) {
         console.log('Combined Prompt:', combinedPrompt);
         console.log('==============================');
 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-
-        const fetchEnhancedImage = async () => {
-            const response = await fetch(`${apiUrl}?key=${apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
+        const generateEnhancedImage = async () => {
+            const result = await generateText({
+                model: google(model),
+                messages: [
+                    {
+                        role: 'user',
+                        content: [
                             {
-                                inlineData: {
-                                    mimeType: mimeType,
-                                    data: imageBase64
-                                }
+                                type: 'image',
+                                image: Buffer.from(imageBase64, 'base64'),
                             },
                             {
+                                type: 'text',
                                 text: combinedPrompt
                             }
                         ]
-                    }],
-                    generationConfig: {
-                        responseModalities: ['Image'],
+                    }
+                ],
+                providerOptions: {
+                    google: {
+                        responseModalities: ['IMAGE'],
                         imageConfig: {
-                            ...(model === 'gemini-3-pro-image-preview' ? { imageSize: '1K' } : {}),
-                            aspectRatio: platformSpec.aspectRatio
+                            aspectRatio: platformSpec.aspectRatio,
+                            ...(model === GEMINI_IMAGE_MODELS.pro ? { imageSize: '1K' } : {}),
                         }
                     }
-                })
+                }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                console.error('Gemini API Error:', errorData);
-                throw new Error(errorData.error?.message || `API error: ${response.status}`);
+            // Extract image from result.files
+            const files = result.files;
+
+            if (!files || files.length === 0) {
+                throw new Error('No image generated');
             }
 
-            const data = await response.json();
-            const part = data.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData);
-
-            if (!part || !part.inlineData) {
-                console.error('No image data in response:', data);
-                throw new Error('No image was generated');
+            const imageFile = files.find(f => f.mediaType.startsWith('image/'));
+            if (!imageFile) {
+                throw new Error('No image data found in response');
             }
 
             return {
-                bytesBase64Encoded: part.inlineData.data,
-                mimeType: part.inlineData.mimeType || 'image/png'
+                bytesBase64Encoded: imageFile.base64,
+                mimeType: imageFile.mediaType,
             };
         };
+
+        const fetchEnhancedImage = async () => {
+            return await generateEnhancedImage();
+        }
 
         const predictions = await Promise.all(
             Array(numberOfImages).fill(null).map(() => fetchEnhancedImage())
@@ -141,8 +140,9 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Product enhance error:', error);
+        const message = handleAIError(error);
         return NextResponse.json(
-            { success: false, error: error instanceof Error ? error.message : 'Internal server error' },
+            { success: false, error: message },
             { status: 500 }
         );
     }

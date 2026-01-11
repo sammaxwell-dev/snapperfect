@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { generateText } from 'ai';
+import { google, isDemoMode, handleAIError, GEMINI_IMAGE_MODELS } from '@/lib/ai-provider';
 
 interface AnglesRequest {
     imageBase64: string;
@@ -87,12 +89,10 @@ export async function POST(request: NextRequest) {
             rotation = 0,
             tilt = 0,
             zoom = 0,
-            model = 'gemini-2.5-flash-image'
+            model = GEMINI_IMAGE_MODELS.flash
         } = body;
 
-        const apiKey = process.env.GEMINI_API_KEY;
-
-        if (!apiKey || apiKey === 'your_api_key_here') {
+        if (isDemoMode()) {
             // Demo mode
             return NextResponse.json({
                 success: true,
@@ -113,61 +113,58 @@ export async function POST(request: NextRequest) {
         console.log('Generated Prompt:', anglePrompt);
         console.log('========================');
 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-
-        const response = await fetch(`${apiUrl}?key=${apiKey}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
+        const result = await generateText({
+            model: google(model),
+            messages: [
+                {
+                    role: 'user',
+                    content: [
                         {
-                            inlineData: {
-                                mimeType: mimeType,
-                                data: imageBase64
-                            }
+                            type: 'image',
+                            image: Buffer.from(imageBase64, 'base64'),
                         },
                         {
+                            type: 'text',
                             text: anglePrompt
                         }
                     ]
-                }],
-                generationConfig: {
-                    responseModalities: ['Text', 'Image']
                 }
-            })
+            ],
+            providerOptions: {
+                google: {
+                    responseModalities: ['IMAGE'],
+                }
+            }
         });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('Gemini API Error:', errorData);
-            throw new Error(errorData.error?.message || `API error: ${response.status}`);
+        // Extract image from result.files
+        const files = result.files;
+
+        if (!files || files.length === 0) {
+            throw new Error('No image generated');
         }
 
-        const data = await response.json();
-        const part = data.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData);
-
-        if (!part || !part.inlineData) {
-            console.error('No image data in response:', data);
-            throw new Error('No image was generated');
+        const imageFile = files.find(f => f.mediaType.startsWith('image/'));
+        if (!imageFile) {
+            throw new Error('No image data found in response');
         }
 
         return NextResponse.json({
             success: true,
             prediction: {
-                bytesBase64Encoded: part.inlineData.data,
-                mimeType: part.inlineData.mimeType || 'image/png'
+                bytesBase64Encoded: imageFile.base64,
+                mimeType: imageFile.mediaType || 'image/png'
             },
             angle: { rotation, tilt, zoom }
         });
 
     } catch (error) {
         console.error('Angles generation error:', error);
+        const message = handleAIError(error);
         return NextResponse.json(
-            { success: false, error: error instanceof Error ? error.message : 'Internal server error' },
+            { success: false, error: message },
             { status: 500 }
         );
     }
 }
+

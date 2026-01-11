@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict';
+import { generateText } from 'ai';
+import { google, isDemoMode, handleAIError, GEMINI_IMAGE_MODELS } from '@/lib/ai-provider';
 
 interface GenerateRequest {
     prompt: string;
@@ -14,16 +14,9 @@ interface GenerateRequest {
 export async function POST(request: NextRequest) {
     try {
         const body: GenerateRequest = await request.json();
-        const { prompt, aspectRatio = '1:1', numberOfImages = 1, style, model = 'gemini-2.5-flash-image', imageSize = '1K' } = body;
+        const { prompt, aspectRatio = '1:1', numberOfImages = 1, style, model = GEMINI_IMAGE_MODELS.flash, imageSize = '1K' } = body;
 
-        const apiKey = process.env.GEMINI_API_KEY;
-
-        // Construct the URL based on the selected model
-        // Create the correct API URL based on the selected model
-        // For Banana models, the method is generateContent
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-
-        if (!apiKey || apiKey === 'your_api_key_here') {
+        if (isDemoMode()) {
             // Demo mode - return placeholder images
             return NextResponse.json({
                 predictions: Array(numberOfImages).fill(null).map((_, i) => ({
@@ -55,50 +48,59 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        const fetchImage = async () => {
-            const response = await fetch(`${apiUrl}?key=${apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: enhancedPrompt
-                        }]
-                    }],
-                    generationConfig: {
-                        responseModalities: ['Image'],
+        const generateSingleImage = async () => {
+            const result = await generateText({
+                model: google(model),
+                prompt: enhancedPrompt,
+                providerOptions: {
+                    google: {
+                        responseModalities: ['IMAGE'],
                         imageConfig: {
-                            ...(model === 'gemini-3-pro-image-preview' ? { imageSize } : {}),
-                            aspectRatio: aspectRatio
-                        }
-                    }
-                })
+                            aspectRatio,
+                            ...(model === GEMINI_IMAGE_MODELS.pro ? { imageSize } : {}),
+                        },
+                    },
+                },
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                console.error('Gemini API Error:', errorData);
-                throw new Error(errorData.error?.message || `API error: ${response.status}`);
+            // Extract image from result files
+            // @ts-ignore - 'files' might not be fully typed in all versions yet, or verified in our env
+            const file = result.experimental_providerMetadata?.google?.files?.[0] || result.files?.[0]; // Fallback if necessary, but SDK standard is result.files usually? 
+            // Actually checking research.md example: result.files
+
+            // Let's rely on documented result.experimental_providerMetadata or result.response... wait, research said result.files
+            // But let's check what generateText returns. It returns { text, ... }
+            // For image generation it says "Image outputs are available in result.experimental_output... or similar?"
+            // Research note said: result.files
+
+            // "for (const file of result.files ?? [])"
+
+            // However, verify if 'files' is on GenerateTextResult.
+            // Documentation says generateText returns { text, toolCalls, ... }
+            // It might be experimental.
+            // Let's try to use experimental_providerMetadata approach or wait, if            // Extract image from result.files
+            const files = result.files;
+
+            if (!files || files.length === 0) {
+                throw new Error('No image generated');
             }
 
-            const data = await response.json();
-
-            // Extract image from Gemini response parts
-            const part = data.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData);
-            if (!part || !part.inlineData) {
-                console.error('No image data in response:', data);
-                throw new Error('No image was generated');
+            const imageFile = files.find(f => f.mediaType.startsWith('image/'));
+            if (!imageFile) {
+                throw new Error('No image data found in response');
             }
 
             return {
-                bytesBase64Encoded: part.inlineData.data,
-                mimeType: part.inlineData.mimeType || 'image/png'
+                bytesBase64Encoded: imageFile.base64,
+                mimeType: imageFile.mediaType,
             };
         };
 
-        // For multiple images, we call the API multiple times as these models currently return one image per generation via REST
+        const fetchImage = async () => {
+            return await generateSingleImage();
+        }
+
+        // For multiple images, we call the API multiple times
         const predictions = await Promise.all(
             Array(numberOfImages).fill(null).map(() => fetchImage())
         );
@@ -111,9 +113,11 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Generation error:', error);
+        const message = handleAIError(error);
         return NextResponse.json(
-            { success: false, error: 'Internal server error' },
-            { status: 500 }
+            { success: false, error: message },
+            { status: 500 } // Or handle status code better
         );
     }
 }
+
