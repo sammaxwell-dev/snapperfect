@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google, isDemoMode, handleAIError, GEMINI_IMAGE_MODELS } from '@/lib/ai-provider';
+import { createClient } from '@/lib/supabase/server';
+import { saveToLibrary } from '@/lib/library/save-to-library';
 
 interface AnglesRequest {
     imageBase64: string;
@@ -147,6 +149,25 @@ export async function POST(request: NextRequest) {
         const imageFile = files.find(f => f.mediaType.startsWith('image/'));
         if (!imageFile) {
             throw new Error('No image data found in response');
+        }
+
+        // Save to library for authenticated users
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+            saveToLibrary({
+                userId: user.id,
+                mediaType: 'image',
+                source: 'angles',
+                fileData: imageFile.base64,
+                mimeType: imageFile.mediaType || 'image/png',
+                metadata: {
+                    prompt: anglePrompt,
+                    model: model,
+                    aspect_ratio: '1:1',
+                },
+            }).catch(err => console.error('[angles] Failed to save to library:', err));
         }
 
         return NextResponse.json({

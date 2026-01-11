@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,7 +13,6 @@ import {
   Sparkles,
   Package,
   Settings,
-  ChevronDown,
   LogOut,
   Menu,
   X,
@@ -22,8 +21,35 @@ import {
   Shirt,
   Fingerprint
 } from "lucide-react";
+import SidebarUser from "./SidebarUser";
+import { signout } from "../(auth)/actions";
+import { createClient } from "@/lib/supabase/client";
+import { Session } from "@supabase/supabase-js";
+
+const Tooltip = ({ children }: { children: string }) => (
+  <span className="absolute left-full ml-2 px-2 py-1 bg-zinc-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 border border-zinc-800">
+    {children}
+  </span>
+);
 
 export default function Sidebar() {
+  const [session, setSession] = useState<Session | null>(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
+
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -39,13 +65,7 @@ export default function Sidebar() {
     return `${baseClass} text-zinc-400 hover:text-white hover:bg-white/5`;
   };
 
-  const Tooltip = ({ children }: { children: string }) => (
-    <span className="absolute left-full ml-2 px-2 py-1 bg-zinc-900 text-white text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 border border-zinc-800">
-      {children}
-    </span>
-  );
-
-  const SidebarContent = () => (
+  const sidebarContent = (
     <>
       {/* Logo Section */}
       <div className={`${isCollapsed ? 'p-3' : 'p-6'} transition-all duration-300`}>
@@ -143,44 +163,27 @@ export default function Sidebar() {
       {/* Footer Area: Profile & Settings */}
       <div className={`${isCollapsed ? 'p-2' : 'p-3'} bg-black/20 border-t border-white/5 space-y-3 transition-all duration-300`}>
         {/* Premium Profile Section */}
-        {!isCollapsed && (
-          <button className="w-full group">
-            <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all">
-              <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-[#D4FF00]/30 group-hover:border-[#D4FF00] transition-colors">
-                <Image
-                  src="/avatar/avatar.jpeg"
-                  alt="User Avatar"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="flex-1 text-left">
-                <div className="text-xs font-black text-white uppercase tracking-tight group-hover:text-[#D4FF00] transition-colors">
-                  SHAMIL
-                </div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4FF00] shadow-[0_0_4px_#D4FF00]" />
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase">Pro Account</span>
-                </div>
-              </div>
-              <ChevronDown className="w-4 h-4 text-zinc-600 group-hover:text-white transition-colors" />
-            </div>
-          </button>
-        )}
+        {!isCollapsed && <SidebarUser />}
 
-        <div className="space-y-1">
-          <Link href="/settings" className={getLinkClass("/settings")} onClick={() => setIsMobileOpen(false)}>
-            <Settings className="w-5 h-5 shrink-0" />
-            {isCollapsed ? <Tooltip>Settings</Tooltip> : <span>Settings</span>}
-          </Link>
-          <button className={`${getLinkClass("")} w-full text-red-500/70 hover:text-red-500 hover:bg-red-500/5`}>
-            <LogOut className="w-5 h-5 shrink-0" />
-            {isCollapsed ? <Tooltip>Logout</Tooltip> : <span>Logout</span>}
-          </button>
-        </div>
+        {session && (
+          <div className="space-y-1">
+            <Link href="/settings" className={getLinkClass("/settings")} onClick={() => setIsMobileOpen(false)}>
+              <Settings className="w-5 h-5 shrink-0" />
+              {isCollapsed ? <Tooltip>Settings</Tooltip> : <span>Settings</span>}
+            </Link>
+            <form action={signout}>
+              <button className={`${getLinkClass("")} w-full text-red-500/70 hover:text-red-500 hover:bg-red-500/5`}>
+                <LogOut className="w-5 h-5 shrink-0" />
+                {isCollapsed ? <Tooltip>Logout</Tooltip> : <span>Logout</span>}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
+
     </>
   );
+
 
   return (
     <>
@@ -210,7 +213,7 @@ export default function Sidebar() {
         transform transition-transform duration-300 ease-in-out
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <SidebarContent />
+        {sidebarContent}
       </aside>
 
       {/* Desktop Sidebar */}
@@ -219,7 +222,7 @@ export default function Sidebar() {
         transition-all duration-300 ease-in-out
         ${isCollapsed ? 'w-16' : 'w-64'}
       `}>
-        <SidebarContent />
+        {sidebarContent}
 
         {/* Collapse Toggle Button */}
         <button

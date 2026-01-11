@@ -15,9 +15,15 @@ import {
     Minus,
     Zap,
     Ghost,
-    X
+    X,
+    Clock
 } from 'lucide-react';
 import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, Suspense } from 'react';
+import { LibraryGrid } from '../library/components/LibraryGrid';
+import { ItemModal } from '../library/components/ItemModal';
+import type { LibraryItem } from '@/lib/library/types';
 
 // Style presets with icons and colors
 const STYLE_PRESETS = [
@@ -74,6 +80,15 @@ interface GeneratedImage {
 }
 
 export default function GeneratePage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">Loading...</div>}>
+            <GenerateContent />
+        </Suspense>
+    );
+}
+
+function GenerateContent() {
+    const searchParams = useSearchParams();
     const [prompt, setPrompt] = useState('');
     const [selectedStyle, setSelectedStyle] = useState('none');
     const [aspectRatio, setAspectRatio] = useState('1:1');
@@ -85,9 +100,21 @@ export default function GeneratePage() {
     const [error, setError] = useState<string | null>(null);
     const [isDemo, setIsDemo] = useState(false);
     const [expandedImage, setExpandedImage] = useState<GeneratedImage | null>(null);
+    const [selectedHistoryItem, setSelectedHistoryItem] = useState<LibraryItem | null>(null);
 
     // UI State for popovers
     const [activePopover, setActivePopover] = useState<'model' | 'ratio' | 'quality' | null>(null);
+
+    // Initialize from URL params (Remix)
+    useEffect(() => {
+        const urlPrompt = searchParams.get('prompt');
+        const urlStyle = searchParams.get('style');
+
+        if (urlPrompt) setPrompt(urlPrompt);
+        if (urlStyle && STYLE_PRESETS.some(s => s.id === urlStyle)) {
+            setSelectedStyle(urlStyle);
+        }
+    }, [searchParams]);
 
     const handleGenerate = async () => {
         if (!prompt.trim()) return;
@@ -263,6 +290,19 @@ export default function GeneratePage() {
                         })}
                     </div>
                 )}
+
+                {/* History Section */}
+                <div className="mt-12 mb-8">
+                    <div className="flex items-center gap-2 mb-6 px-1">
+                        <Clock className="w-5 h-5 text-[#D4FF00]" />
+                        <h2 className="text-xl font-bold">History</h2>
+                    </div>
+
+                    <LibraryGrid
+                        typeFilter="image"
+                        onItemClick={setSelectedHistoryItem}
+                    />
+                </div>
             </div>
 
             {/* Unified Bottom Toolbar */}
@@ -538,6 +578,14 @@ export default function GeneratePage() {
                     </div>
                 )
             }
+
+            {/* History Item Modal */}
+            {selectedHistoryItem && (
+                <ItemModal
+                    item={selectedHistoryItem}
+                    onClose={() => setSelectedHistoryItem(null)}
+                />
+            )}
 
             <style jsx>{`
         @keyframes shimmer {

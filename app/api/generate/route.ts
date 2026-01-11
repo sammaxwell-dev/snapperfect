@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google, isDemoMode, handleAIError, GEMINI_IMAGE_MODELS } from '@/lib/ai-provider';
+import { createClient } from '@/lib/supabase/server';
+import { saveToLibrary } from '@/lib/library/save-to-library';
 
 interface GenerateRequest {
     prompt: string;
@@ -104,6 +106,28 @@ export async function POST(request: NextRequest) {
         const predictions = await Promise.all(
             Array(numberOfImages).fill(null).map(() => fetchImage())
         );
+
+        // Save to library for authenticated users
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+            for (const prediction of predictions) {
+                saveToLibrary({
+                    userId: user.id,
+                    mediaType: 'image',
+                    source: 'generate',
+                    fileData: prediction.bytesBase64Encoded,
+                    mimeType: prediction.mimeType,
+                    metadata: {
+                        prompt: enhancedPrompt,
+                        model: model,
+                        style: style,
+                        aspect_ratio: aspectRatio,
+                    },
+                }).catch(err => console.error('[generate] Failed to save to library:', err));
+            }
+        }
 
         return NextResponse.json({
             success: true,

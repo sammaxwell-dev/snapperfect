@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google, isDemoMode, handleAIError, GEMINI_IMAGE_MODELS } from '@/lib/ai-provider';
+import { createClient } from '@/lib/supabase/server';
+import { saveToLibrary } from '@/lib/library/save-to-library';
 
 interface ProductEnhanceRequest {
     imageBase64: string;
@@ -130,6 +132,30 @@ export async function POST(request: NextRequest) {
         const predictions = await Promise.all(
             Array(numberOfImages).fill(null).map(() => fetchEnhancedImage())
         );
+
+        // Save to library for authenticated users
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+            // Save each generated image in background (don't block response)
+            for (const prediction of predictions) {
+                saveToLibrary({
+                    userId: user.id,
+                    mediaType: 'image',
+                    source: 'product-enhance',
+                    fileData: prediction.bytesBase64Encoded,
+                    mimeType: prediction.mimeType,
+                    metadata: {
+                        prompt: combinedPrompt,
+                        model: model,
+                        style: style,
+                        platform: platform,
+                        aspect_ratio: platformSpec.aspectRatio,
+                    },
+                }).catch(err => console.error('[product-enhance] Failed to save to library:', err));
+            }
+        }
 
         return NextResponse.json({
             success: true,
