@@ -8,13 +8,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'jnfxijwavgplafrikeud.supabase.co',
-        port: '',
-        pathname: '/storage/v1/object/sign/**',
+        pathname: '**',
       },
     ],
   },
 };
-
-
 
 export default nextConfig;
