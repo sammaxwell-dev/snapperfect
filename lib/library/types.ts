@@ -24,6 +24,7 @@ export interface LibraryItem {
     source: GenerationSource;
     created_at: string;
     signed_url?: string;
+    thumbnail_url?: string;
 }
 
 export interface LibraryListResponse {
