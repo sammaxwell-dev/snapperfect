@@ -243,7 +243,7 @@ export default function ProductEnhancePage() {
     return (
         <div className="min-h-screen flex flex-col bg-[#050505] text-white">
             {/* Main Content */}
-            <div className="flex-1 overflow-auto p-4 md:p-6 pb-24">
+            <div className="flex-1 overflow-auto pt-16 p-4 md:p-6 pb-24">
                 {/* Header */}
                 <div className="mb-4">
                     <h1 className="text-3xl font-black text-white uppercase tracking-tight">

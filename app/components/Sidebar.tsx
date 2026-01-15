@@ -189,7 +189,7 @@ export default function Sidebar() {
     <>
       {/* Mobile Menu Button */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 transition-colors"
+        className="lg:hidden fixed top-4 left-4 z-[60] p-2.5 rounded-xl bg-black/50 backdrop-blur-md border border-white/10 shadow-lg hover:bg-black/70 transition-all active:scale-95"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
         {isMobileOpen ? (
