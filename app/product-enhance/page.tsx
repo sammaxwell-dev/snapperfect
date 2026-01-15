@@ -18,6 +18,7 @@ import {
     RotateCcw,
     Zap
 } from 'lucide-react';
+import { compressImage } from '@/lib/utils';
 
 // Model options
 const MODELS = [
@@ -123,21 +124,27 @@ export default function ProductEnhancePage() {
     const [error, setError] = useState<string | null>(null);
 
     // Handle file upload
-    const handleFileUpload = useCallback((file: File) => {
+    const handleFileUpload = useCallback(async (file: File) => {
         if (!file.type.startsWith('image/')) {
             setError('Please upload an image');
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const result = e.target?.result as string;
-            // Remove data URL prefix for API
-            setUploadedImage(result);
+        try {
+            // Read file for preview immediately
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // Show original for preview, but we'll compress before sending
+                const result = e.target?.result as string;
+                setUploadedImage(result);
+            };
+            reader.readAsDataURL(file);
             setUploadedMimeType(file.type);
             setError(null);
-        };
-        reader.readAsDataURL(file);
+        } catch (err) {
+            console.error('Error processing file:', err);
+            setError('Failed to process image');
+        }
     }, []);
 
     // Drag and drop handlers
@@ -168,15 +175,15 @@ export default function ProductEnhancePage() {
         setGeneratedImages([]);
 
         try {
-            // Extract base64 data from data URL
-            const base64Data = uploadedImage.split(',')[1];
+            // Compress image before sending
+            const { base64: compressedBase64, mimeType: compressedMimeType } = await compressImage(uploadedImage);
 
             const response = await fetch('/api/product-enhance', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    imageBase64: base64Data,
-                    mimeType: uploadedMimeType,
+                    imageBase64: compressedBase64,
+                    mimeType: compressedMimeType,
                     style: selectedStyle,
                     platform: selectedPlatform,
                     numberOfImages,
@@ -184,11 +191,21 @@ export default function ProductEnhancePage() {
                 }),
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(data.error || 'Generation failed');
+                if (response.status === 413) {
+                    throw new Error('Image is too large. Please try a smaller image.');
+                }
+                const errorText = await response.text();
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    throw new Error(errorJson.error || `Server error: ${response.status}`);
+                } catch (e) {
+                    // If response is not JSON (e.g. standard 413 page or 500 html), throw formatted error
+                    throw new Error(`Upload failed (${response.status}). Please try again.`);
+                }
             }
+
+            const data = await response.json();
 
             if (data.predictions && Array.isArray(data.predictions)) {
                 const newImages: GeneratedImage[] = data.predictions.map((p: any, i: number) => ({
