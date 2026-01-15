@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { LibraryItem } from './LibraryItem';
 import type { LibraryItem as LibraryItemType, LibraryListResponse } from '@/lib/library/types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
+import Link from 'next/link';
 
 interface LibraryGridProps {
     initialItems?: LibraryItemType[];
@@ -29,6 +30,7 @@ export function LibraryGrid({
     const [hasMore, setHasMore] = useState(true);
     const [offset, setOffset] = useState(initialItems.length);
     const [error, setError] = useState<string | null>(null);
+    const [unauthorized, setUnauthorized] = useState(false);
 
     // Notify parent of items update
     useEffect(() => {
@@ -40,7 +42,7 @@ export function LibraryGrid({
 
     // Fetch items from API
     const fetchItems = useCallback(async (currentOffset: number, reset = false) => {
-        if (loading) return;
+        if (loading || unauthorized) return;
 
         setLoading(true);
         setError(null);
@@ -56,6 +58,14 @@ export function LibraryGrid({
             }
 
             const response = await fetch(`/api/library?${params}`);
+
+            // Handle unauthorized - stop all future requests
+            if (response.status === 401) {
+                setUnauthorized(true);
+                setHasMore(false);
+                return;
+            }
+
             const data: LibraryListResponse = await response.json();
 
             if (!data.success) {
@@ -77,7 +87,7 @@ export function LibraryGrid({
         } finally {
             setLoading(false);
         }
-    }, [loading, typeFilter]);
+    }, [loading, typeFilter, unauthorized]);
 
     // Initial load
     useEffect(() => {
@@ -127,17 +137,27 @@ export function LibraryGrid({
         onSelectionChange?.(newSelection);
     };
 
-    // Empty state
-    if (!loading && items.length === 0 && !error) {
+
+
+    // Show login prompt for unauthorized users
+    if (unauthorized) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center mb-4">
-                    <span className="text-4xl">🖼️</span>
+                <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mb-4">
+                    <Lock className="w-8 h-8 text-zinc-500" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Your library is empty</h3>
-                <p className="text-zinc-400 max-w-sm">
-                    Generated images and videos will appear here automatically.
+                <h3 className="text-xl font-semibold text-white mb-2">
+                    Sign in required
+                </h3>
+                <p className="text-zinc-400 mb-6 max-w-md">
+                    Please sign in to access your personal library of generated images and videos.
                 </p>
+                <Link
+                    href="/login"
+                    className="px-6 py-2.5 bg-[#D4FF00] text-black font-semibold rounded-lg hover:bg-[#c5ef00] transition-colors"
+                >
+                    Sign In
+                </Link>
             </div>
         );
     }

@@ -54,14 +54,24 @@ export function LibraryItem({ item, onClick, selected, onSelect }: LibraryItemPr
 
             {/* Media preview */}
             {item.signed_url ? (
-                <Image
-                    src={item.signed_url}
-                    alt={item.metadata?.prompt?.substring(0, 50) || 'Generated media'}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                />
+                isVideo ? (
+                    <video
+                        src={item.signed_url}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        muted
+                        playsInline
+                        preload="metadata"
+                    />
+                ) : (
+                    <Image
+                        src={item.signed_url}
+                        alt={item.metadata?.prompt?.substring(0, 50) || 'Generated media'}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                    />
+                )
             ) : (
                 <div className="w-full h-full flex items-center justify-center bg-zinc-800">
                     <span className="text-zinc-500 text-sm">Loading...</span>
