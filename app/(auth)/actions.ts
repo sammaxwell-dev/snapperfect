@@ -11,7 +11,7 @@ export async function signInWithGoogle(formData: FormData) {
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            redirectTo: `${origin}/callback`,
+            redirectTo: `${origin}/callback?next=/library`,
         },
     })
 

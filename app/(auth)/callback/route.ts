@@ -4,8 +4,15 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
     const code = searchParams.get('code')
+    const errorParam = searchParams.get('error')
+    const errorDescription = searchParams.get('error_description')
+
     // if "next" is in param, use it as the redirect URL
-    const next = searchParams.get('next') ?? '/account'
+    const next = searchParams.get('next') ?? '/library'
+
+    if (errorParam) {
+        return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(errorDescription || errorParam)}`)
+    }
 
     if (code) {
         const supabase = await createClient()
@@ -21,6 +28,8 @@ export async function GET(request: Request) {
             } else {
                 return NextResponse.redirect(`${origin}${next}`)
             }
+        } else {
+            return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`)
         }
     }
 
