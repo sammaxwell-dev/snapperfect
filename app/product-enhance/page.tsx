@@ -406,7 +406,7 @@ export default function ProductEnhancePage() {
                         {/* Style Selector */}
                         <button
                             onClick={() => setShowStyleModal(true)}
-                            className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all group min-w-[140px]"
+                            className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all group min-w-[50px] sm:min-w-[140px]"
                         >
                             <div className="w-8 h-8 rounded-lg overflow-hidden relative flex-shrink-0 border border-white/10">
                                 {currentStyle && (
@@ -419,11 +419,11 @@ export default function ProductEnhancePage() {
                                     />
                                 )}
                             </div>
-                            <div className="flex-1 text-left min-w-0">
+                            <div className="flex-1 text-left min-w-0 hidden sm:block">
                                 <div className="text-[10px] text-zinc-500 uppercase tracking-wider leading-none mb-0.5">Style</div>
                                 <div className="text-xs font-bold text-white truncate">{currentStyle?.label}</div>
                             </div>
-                            <ChevronDown className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
+                            <ChevronDown className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors hidden sm:block" />
                         </button>
 
                         <div className="w-px h-8 bg-[#27272a]" />
@@ -435,7 +435,7 @@ export default function ProductEnhancePage() {
                                 className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#121212] border border-white/5 hover:border-white/20 transition-all"
                             >
                                 {currentPlatform && <currentPlatform.icon className="w-3.5 h-3.5 text-[#D4FF00]" />}
-                                <span className="text-xs font-bold text-white whitespace-nowrap">{currentPlatform?.label}</span>
+                                <span className="text-xs font-bold text-white whitespace-nowrap hidden sm:inline">{currentPlatform?.label}</span>
                                 <ChevronDown className="w-3.5 h-3.5 text-zinc-600" />
                             </button>
 
@@ -529,7 +529,7 @@ export default function ProductEnhancePage() {
                         <div className="w-px h-8 bg-[#27272a] hidden sm:block" />
 
                         {/* Number of images */}
-                        <div className="flex items-center gap-2 bg-[#121212]/50 rounded-xl border border-white/5 px-2 py-1.5">
+                        <div className="items-center gap-2 bg-[#121212]/50 rounded-xl border border-white/5 px-2 py-1.5 hidden sm:flex">
                             <button
                                 onClick={() => setNumberOfImages(Math.max(1, numberOfImages - 1))}
                                 disabled={numberOfImages <= 1}

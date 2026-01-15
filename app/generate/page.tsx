@@ -468,7 +468,7 @@ function GenerateContent() {
                                 <button
                                     onClick={() => setActivePopover(activePopover === 'quality' ? null : 'quality')}
                                     disabled={selectedModel === 'gemini-2.5-flash-image'}
-                                    className={`relative z-50 flex items-center gap-2 px-3 py-2 rounded-xl border transition-all ${selectedModel === 'gemini-2.5-flash-image' ? 'opacity-40 grayscale cursor-not-allowed' :
+                                    className={`relative z-50 items-center gap-2 px-3 py-2 rounded-xl border transition-all hidden sm:flex ${selectedModel === 'gemini-2.5-flash-image' ? 'opacity-40 grayscale cursor-not-allowed' :
                                         activePopover === 'quality' ? 'bg-[#121212] border-white/20' : 'bg-transparent border-transparent hover:bg-white/5'
                                         }`}
                                 >
@@ -502,7 +502,7 @@ function GenerateContent() {
                             </div>
 
                             {/* Count */}
-                            <div className="flex items-center gap-3 bg-[#121212]/50 rounded-xl border border-white/5 px-3 py-2 mx-1">
+                            <div className="items-center gap-3 bg-[#121212]/50 rounded-xl border border-white/5 px-3 py-2 mx-1 hidden sm:flex">
                                 <button
                                     onClick={() => setNumberOfImages(Math.max(1, numberOfImages - 1))}
                                     disabled={numberOfImages <= 1}
